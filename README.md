@@ -33,6 +33,11 @@ Make sure you have installed the dependencies with python. You should need to in
 pip install requests
 ```
 
+Move `main.py` into `/usr/local/bin/` using:
+```sh
+cp main.py /usr/local/bin/city_news_bot
+```
+
 To create the daemon and have the service always active you can follow these steps:
 - insert .service and .timer into the services folder `/etc/systemd/system`, making sure to change the keys inside .timer
 - start systemctl service
@@ -42,13 +47,15 @@ For example, set TG_TOKEN and CHAT_ID inside `city_news_bot.service` like:
 ExecStart=env TG_TOKEN="7082907773:AAGx-50TmQr_v7KAGsR0H7FSE0FcFA9clR8" CHAT_ID="519932241" /usr/bin/python3  /usr/local/bin/city_news_bot
 ```
 
+About pooling interval you need to change `OnUnitActiveSec` in `city_news_bot.timer`.
+
 After this you can put in systemd folder:
 
 ```sh
 sudo cp systemd/* /etc/systemd/system/
 ```
 
-Then reload deamon and start
+Then reload deamon and start:
 
 ```sh
 sudo systemctl daemon-reload
