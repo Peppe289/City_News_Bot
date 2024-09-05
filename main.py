@@ -4,6 +4,7 @@ import html
 import re
 import sqlite3
 import os
+import errno
 
 # get key from system env
 TOKEN = os.environ["TG_TOKEN"]
@@ -135,9 +136,19 @@ def handler(url, data):
     getNewMessage(page_ajax)
 
 def main():
+    db_dir = os.path.expanduser("~/.city_news_bot/")
+
+    try:
+        os.mkdir(db_dir)
+    except OSError as error:
+        if error.errno != errno.EEXIST:
+            print(error)
+
+    db_path = os.path.join(db_dir, "database.db")
+
     # open database connection
     global conn
-    conn = sqlite3.connect("database.db", timeout=1000)
+    conn = sqlite3.connect(db_path, timeout=1000)
     global cursor
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS news_history(id INTEGER PRIMARY KEY AUTOINCREMENT, date varchar(50), title TEXT, type TEXT);")
