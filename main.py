@@ -3,10 +3,11 @@ import json
 import html
 import re
 import sqlite3
+import os
 
-# this is just for test. I will revoke this later.
-TOKEN = "7082907773:AAGx-50TmQr_v7KAGsR0H7FSE0FcFA9clR8"
-chat_id = "519932241"
+# get key from system env
+TOKEN = os.environ["TG_TOKEN"]
+chat_id = os.environ["CHAT_ID"]
 
 def send_post_request(url, data):
     try:
