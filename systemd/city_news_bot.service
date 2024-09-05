@@ -1,0 +1,10 @@
+[Unit]
+Description=City News Bot Script
+After=network.target
+
+[Service]
+ExecStart=env TG_TOKEN="your_token_bot" CHAT_ID="your_chatID" /usr/bin/python3  /usr/local/bin/city_news_bot
+WorkingDirectory=/usr/local/bin/
+StandardOutput=journal
+StandardError=journal
+Restart=on-failure

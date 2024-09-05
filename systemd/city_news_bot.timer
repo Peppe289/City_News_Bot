@@ -1,0 +1,10 @@
+[Unit]
+Description=Pooling using timer for city_news_bot
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=20min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
