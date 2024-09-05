@@ -2,10 +2,18 @@ import requests
 import json
 import html
 import re
+import sqlite3
 
 # this is just for test. I will revoke this later.
 TOKEN = "7082907773:AAGx-50TmQr_v7KAGsR0H7FSE0FcFA9clR8"
 chat_id = "519932241"
+
+# open database connection
+conn = sqlite3.connect("database.db", timeout=1000)
+cursor = conn.cursor()
+
+cursor.execute("CREATE TABLE IF NOT EXISTS news_history(id INTEGER PRIMARY KEY AUTOINCREMENT, date varchar(50), title TEXT, type TEXT);")
+
 
 def send_post_request(url, data):
     try:
@@ -83,13 +91,30 @@ def prepare_message(obj):
     #body = obj["body"] this website is shit. the body and title are same.
     url = obj["url"]
 
+    query = "SELECT * FROM news_history WHERE date = ? AND title = ? AND type = ?;"
+    cursor.execute(query, (date, title, type))
+    results = cursor.fetchall()
+    
+    # already in database. don't send again.
+    if results:
+        return -1
+
     message = f'{type} - {date}\n\n{title}\n{url}'
+    
+    query = "INSERT INTO news_history (date, title, type) VALUES (?, ?, ?);"
+    cursor.execute(query, (date, title, type))
 
     return message
 
 def processing_data(html):
     obj = convert_html_to_obj(html)
-    send_message(prepare_message(obj))
+    pm = prepare_message(obj)
+    
+    if pm == -1:
+        print("Data already in database. Don't send again: " + obj["title"])
+        return
+    else:
+        send_message(pm)
 
 # cluster of 3
 def getNewMessage(html):
@@ -125,6 +150,10 @@ while index < 3:
     handler(url, data.replace("POST_CLUSTER", str(index * 3)))
     index += 1
     print(index)
+
+conn.commit()
+cursor.close()
+conn.close()
 
 exit()
 
